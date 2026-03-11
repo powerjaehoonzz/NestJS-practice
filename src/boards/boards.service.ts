@@ -14,8 +14,8 @@ export class BoardsService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  getAllBoards(): Board[] {
-    return this.boards;
+  async getAllBoards(): Promise<Board[]> {
+    return this.boardRepository.find();
   }
 
   async createBoard(dto: CreateBoardDto): Promise<Board> {
@@ -46,9 +46,9 @@ export class BoardsService {
     }
   }
 
-  updateBoardStatus(id: number, status: BoardStatus): Board {
-    const board = this.getBoardById(id);
+  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+    const board = await this.getBoardById(id);
     board.status = status;
-    return board;
+    return this.boardRepository.save(board);
   }
 }

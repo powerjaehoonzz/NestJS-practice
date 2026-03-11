@@ -20,7 +20,7 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get('/')
-  getAllBoard(): Board[] {
+  async getAllBoard(): Promise<Board[]> {
     return this.boardsService.getAllBoards();
   }
 
@@ -36,15 +36,15 @@ export class BoardsController {
   }
 
   @Delete('/:id')
-  deleteBoard(@Param('id') id: string): void {
-    this.boardsService.deleteBoard(id);
+  async deleteBoard(@Param('id') id: string): Promise<void> {
+    await this.boardsService.deleteBoard(+id);
   }
 
   @Patch('/:id/status')
-  updateBoardStatus(
+  async updateBoardStatus(
     @Param('id') id: string,
     @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  ) {
-    return this.boardsService.updateBoardStatus(id, status);
+  ): Promise<Board> {
+    return this.boardsService.updateBoardStatus(+id, status);
   }
 }
