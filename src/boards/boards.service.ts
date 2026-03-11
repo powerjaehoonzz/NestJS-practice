@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-// import { Board, BoardStatus } from './board.model';
-import { v1 as uuid } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,40 +11,39 @@ export class BoardsService {
 
   constructor(
     @InjectRepository(Board)
-    private boardsService: Repository<Board>,
+    private boardRepository: Repository<Board>,
   ) {}
 
   getAllBoards(): Board[] {
     return this.boards;
   }
 
-  createBoard(CreateBoardDto: CreateBoardDto): Board {
-    const { title, description } = CreateBoardDto;
-    const board: Board = {
-      id: uuid(),
-      title: title,
-      description: description,
-      status: BoardStatus.PUBLIC,
-    };
+  async createBoard(dto: CreateBoardDto): Promise<Board> {
+    const { title, description } = dto;
 
-    this.boards.push(board);
-    return board;
+    const board = this.boardRepository.create({
+      title,
+      description,
+      status: BoardStatus.PUBLIC,
+    });
+
+    return this.boardRepository.save(board);
   }
 
-  getBoardById(id: string): Board {
-    const board = this.boards.find((board) => board.id === id);
+  async getBoardById(id: number): Promise<Board> {
+    const board = await this.boardRepository.findOne({ where: { id } });
     if (!board) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
     }
     return board;
   }
 
-  deleteBoard(id: string): void {
+  deleteBoard(id: number): void {
     const found = this.getBoardById(id);
     this.boards = this.boards.filter((board) => board.id !== found.id);
   }
 
-  updateBoardStatus(id: string, status: BoardStatus): Board {
+  updateBoardStatus(id: number, status: BoardStatus): Board {
     const board = this.getBoardById(id);
     board.status = status;
     return board;
