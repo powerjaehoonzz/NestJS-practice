@@ -38,9 +38,12 @@ export class BoardsService {
     return board;
   }
 
-  deleteBoard(id: number): void {
-    const found = this.getBoardById(id);
-    this.boards = this.boards.filter((board) => board.id !== found.id);
+  async deleteBoard(id: number): Promise<void> {
+    const result = await this.boardRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`게시글을 찾을 수 없습니다. ID: ${id}`);
+    }
   }
 
   updateBoardStatus(id: number, status: BoardStatus): Board {
