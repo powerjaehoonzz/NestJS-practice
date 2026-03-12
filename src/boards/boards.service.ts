@@ -7,8 +7,6 @@ import { BoardStatus } from './board-status.enum';
 
 @Injectable()
 export class BoardsService {
-  private boards: Board[] = [];
-
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
@@ -40,7 +38,6 @@ export class BoardsService {
 
   async deleteBoard(id: number): Promise<void> {
     const result = await this.boardRepository.delete(id);
-
     if (result.affected === 0) {
       throw new NotFoundException(`게시글을 찾을 수 없습니다. ID: ${id}`);
     }
