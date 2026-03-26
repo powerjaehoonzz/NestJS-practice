@@ -44,8 +44,11 @@ export class BoardsController {
   }
 
   @Delete('/:id')
-  async deleteBoard(@Param('id') id: string): Promise<void> {
-    await this.boardsService.deleteBoard(+id);
+  async deleteBoard(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    await this.boardsService.deleteBoard(+id, user);
   }
 
   @Patch('/:id/status')
